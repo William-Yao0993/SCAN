@@ -1,0 +1,7 @@
+Welcome to Export Section.
+
+Select the Options to Export the Data. 
+
+Export Folder is a Sub-Folder Called Predict 
+under the same Folder of Your Images Data.
+

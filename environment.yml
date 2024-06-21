@@ -1,0 +1,28 @@
+name: SCANenv
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+
+
+dependencies:
+  - python=3.11
+  - pandas
+  - Pillow
+  - seaborn
+  - matplotlib
+  - numpy
+  - pytorch 
+  - torchvision
+  - torchaudio
+  - tensorboard
+  - cpuonly
+  - ultralytics
+  - openpyxl
+  - xlsxwriter
+  - pip
+  - tqdm
+  - pip:
+    - ttkthemes
+    - opencv-contrib-python-headless
+    #- pyinstaller

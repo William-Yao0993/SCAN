@@ -1,0 +1,31 @@
+Aperture Observation: 
+Click Aperture will execute Pore segment model after detected Stomata, resulting aperture size data.
+
+
+Confidence(0.001 < x < 1): 
+The confidence threshold is like a filter that you can set(Default: 0.5).
+It tells the software the minimum level of sureness it must have before it shows you a predicted result.
+e.g.: If 0.5 is set to confidence, the model will only label out the stomata that is at least 50% sure about.
+
+
+Scale bar: 
+The Scale bar length (Unit) and Scale bar length (pixel) are used as a reference value in our scale bar dection algorithm 
+Practical Measuring suggestion in Dino-Lite Microscopy:
+----------------------------------------------------------------------------------------
+|      Species      |  Resolution | Magnification | Length1 | Unit1 | Length2 | Unit2 | 
+|     Arabidopsis   | 2560 X 1920 |    690.5±1 X  |   0.05  |  mm   |   221   | pixel |
+|       Canola      | 2560 X 1920 |    692±2 X    |   0.05  |  mm   |   222   | pixel |
+|       Canola      | 1280 X 960  |    691±2 X    |   0.05  |  mm   |   112   | pixel |
+|       Maize       | 2560 X 1920 |    413±1 X    |   0.1   |  mm   |   269   | pixel |
+|      Tobacco      | 2560 X 1920 |    690.5±1 X  |   0.05  |  mm   |   221   | pixel |
+| Panicum miliacecm | 2560 X 1920 |    413±1 X    |   0.1   |  mm   |   269   | pixel |
+|       Rice        | 2560 X 1920 |    413±2 X    |   0.1   |  mm   |   267   | pixel |
+|       Rice        | 2560 X 1920 |    413±1 X    |   0.05  |  mm   |   227   | pixel |
+|       Wheat       | 2560 X 1920 |    692±1 X    |   0.05  |  mm   |   224   | pixel |
+|       Wheat       | 2560 X 1920 |    412.5±1 X  |   0.1   |  mm   |   267   | pixel |
+----------------------------------------------------------------------------------------
+
+Please Click Execute to Start, Prediction Speed Depends on CPU Architechture. 
+Intel i7-6700 CPU: 2 seconds per image 
+Intel i7-1365U CPU: 0.9 second per image
+NVIDIA A30 Tensor Core GPU: 0.4 second per image
