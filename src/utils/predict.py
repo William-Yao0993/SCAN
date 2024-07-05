@@ -9,6 +9,7 @@ import time
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from ..config import *
+import re
 ##-----------------------------------------------------------------------------------
 # Verison 1.1
 # Change Prection mode to Stream (Results type: Generator), less memory comsumption
@@ -195,9 +196,12 @@ def draw_distribution_plot(data: list| pd.DataFrame ,x:str,y:str):
     import matplotlib.pyplot as plt
     import seaborn as sns
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
     fig, ax = plt.subplots(figsize = (16,10))
-    df_cp = df.dropna(axis=0,subset=[x,y],inplace=False)
-    sns.boxenplot(x=x, y=y, data=df_cp, ax=ax) # More qualtiles 
+    df_cp = df.dropna(axis=0,subset=[x,y],inplace=False).copy()
+    df_cp['x_numeric'] = df_cp[x].apply(lambda s: int(re.search(r'\d+', s).group()))
+    sorted_categories = df_cp.sort_values('x_numeric')[x].unique()
+    sns.boxenplot(x=x, y=y, data=df_cp, ax=ax,order=sorted_categories) # More qualtiles 
     ax.set_title(f'{y} Distribution',fontsize = BIG_FONT_SIZE)
     ax.set_ylabel(y,fontsize=MEDIUM_FONT_SIZE)
     plt.xticks(rotation=45,fontsize=MEDIUM_FONT_SIZE)
