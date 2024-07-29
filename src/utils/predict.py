@@ -92,6 +92,13 @@ def predict_and_analyse(grouped_tasks,run_pore,conf,sb_lenth, sb_unit,sb_pxl):
                 # Run Pore Segment model 
                 if run_pore:
                     cropped_imgs= crop(img,bboxes)
+                    # temp_path = os.path.join(TEMP_DIR,f'crops_{img_name}')
+                    # if not os.path.exists(temp_path):
+                    #     os.mkdir(temp_path)
+                    # for i,arr in enumerate(cropped_imgs):
+                    #     bgr = arr[...,::-1]
+                    #     img = Image.fromarray(bgr,'RGB')
+                    #     img.save(os.path.join(temp_path,f'{i}.jpg'))
                     pore_model = YOLO(PORE_MODEL)
                     pore_results = pore_model.predict(
                     cropped_imgs,
@@ -199,9 +206,13 @@ def draw_distribution_plot(data: list| pd.DataFrame ,x:str,y:str):
 
     fig, ax = plt.subplots(figsize = (16,10))
     df_cp = df.dropna(axis=0,subset=[x,y],inplace=False).copy()
-    df_cp['x_numeric'] = df_cp[x].apply(lambda s: int(re.search(r'\d+', s).group()))
-    sorted_categories = df_cp.sort_values('x_numeric')[x].unique()
+    sorted_categories=None
+
+    if df_cp[x].apply(lambda s: re.search(r'\d+', s)).notnull().any():                           
+        df_cp['x_numeric'] = df_cp[x].apply(lambda s: int(re.search(r'\d+', s).group())) 
+        sorted_categories = df_cp.sort_values('x_numeric')[x].unique()
     sns.boxenplot(x=x, y=y, data=df_cp, ax=ax,order=sorted_categories) # More qualtiles 
+    
     ax.set_title(f'{y} Distribution',fontsize = BIG_FONT_SIZE)
     ax.set_ylabel(y,fontsize=MEDIUM_FONT_SIZE)
     plt.xticks(rotation=45,fontsize=MEDIUM_FONT_SIZE)
