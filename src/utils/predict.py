@@ -85,8 +85,11 @@ def predict_and_analyse(grouped_tasks,run_pore,conf,sb_lenth, sb_unit,sb_pxl):
                 
                 default_ratio =sb_lenth/sb_pxl
                 ratio_to_unit = line_detect(img,sb_lenth,default_ratio)
+                #print(ratio_to_unit)
                 area_in_mm2 = img_area(img, ratio_to_unit)
+                #print(area_in_mm2)
                 masked_areas= masks_calculator(masks,ratio_to_unit)
+                #print(len(masked_areas))
                 pore_areas=np.full_like(masked_areas,fill_value=np.nan) # iterable placeholder
                 
                 # Run Pore Segment model 
@@ -151,6 +154,7 @@ def process_image_data(data:list,sb_unit,area_in_mm2) -> dict:
     image_summary = {
         FOLDER_ID: dir_name,
         IMAGE_ID: f'Image Summary: {img_name}',
+        STOMATA_COUNT: df[STOMATA_ID].count(),
         STOMATA_DENSITY: df[STOMATA_ID].count() / area_in_mm2,
         STOMATA_SIZE+f'({sb_unit}²)'+'_Mean': df[STOMATA_SIZE+f'({sb_unit}²)'].mean(),
         STOMATA_SIZE+f'({sb_unit}²)'+'_SE': df[STOMATA_SIZE+f'({sb_unit}²)'].sem(),
@@ -238,25 +242,28 @@ def draw_regression_plot(data: list| pd.DataFrame,sb_unit):
         return a / x + b
     def log_func(x, a, b):
         return a * np.log(x) + b
-    x = STOMATA_DENSITY
-    y = STOMATA_SIZE+f'({sb_unit}²)'+'_Mean'
-    fig, ax = plt.subplots(figsize = (16,10))
-    df_cp = df.dropna(axis=0,subset=['Stomata Density'],inplace=False)
-    popt_inv, pcov_inv = curve_fit(inv_func, df_cp[x], df_cp[y])
-    popt_log, pcov_log = curve_fit(log_func, df_cp[x], df_cp[y])
-    slope, intercept = np.polyfit(df_cp[x], df_cp[y], 1)
-    ax = sns.scatterplot(data=df_cp,x=x, y=y)
-    x_vals = np.linspace(df_cp[x].min(),df_cp[x].max(),100)
-    plt.plot(x_vals, inv_func(x_vals, *popt_inv), color='red', label=f'Fit: a/x + b\n a={popt_inv[0]:.5f}, b={popt_inv[1]:.5f}')
-    plt.plot(x_vals, log_func(x_vals, *popt_log), color='green', label=f'Fit: a*log(x) + b\n a={popt_log[0]:.5f}, b={popt_log[1]:.5f}')
-    plt.plot(x_vals, slope * x_vals + intercept, color='blue',label=f'Fit: a*x + b\n a={slope:.5f}, b={intercept:.5f}')
-    r = df_cp[x].corr(df_cp[y])
-    ax.set_xlabel(f'stomata density in mm²')
-    ax.set_ylabel(f'stomata size ofin mm²')
-    ax.text(0.05, 0.05, f'n={len(df_cp)}\nr={r:.4f}', transform=ax.transAxes,
-    ha='left', va='bottom', fontsize=12, bbox=dict(facecolor='lightgray', alpha=0.75))
-    plt.legend(loc='upper right',fancybox=True, framealpha=0.5)
-    plt.tight_layout()
+    try:
+        x = STOMATA_DENSITY
+        y = STOMATA_SIZE+f'({sb_unit}²)'+'_Mean'
+        fig, ax = plt.subplots(figsize = (16,10))
+        df_cp = df.dropna(axis=0,subset=['Stomata Density'],inplace=False)
+        popt_inv, pcov_inv = curve_fit(inv_func, df_cp[x], df_cp[y])
+        popt_log, pcov_log = curve_fit(log_func, df_cp[x], df_cp[y])
+        slope, intercept = np.polyfit(df_cp[x], df_cp[y], 1)
+        ax = sns.scatterplot(data=df_cp,x=x, y=y)
+        x_vals = np.linspace(df_cp[x].min(),df_cp[x].max(),100)
+        plt.plot(x_vals, inv_func(x_vals, *popt_inv), color='red', label=f'Fit: a/x + b\n a={popt_inv[0]:.5f}, b={popt_inv[1]:.5f}')
+        plt.plot(x_vals, log_func(x_vals, *popt_log), color='green', label=f'Fit: a*log(x) + b\n a={popt_log[0]:.5f}, b={popt_log[1]:.5f}')
+        plt.plot(x_vals, slope * x_vals + intercept, color='blue',label=f'Fit: a*x + b\n a={slope:.5f}, b={intercept:.5f}')
+        r = df_cp[x].corr(df_cp[y])
+        ax.set_xlabel(f'stomata density in mm²')
+        ax.set_ylabel(f'stomata size in mm²')
+        ax.text(0.05, 0.05, f'n={len(df_cp)}\nr={r:.4f}', transform=ax.transAxes,
+        ha='left', va='bottom', fontsize=12, bbox=dict(facecolor='lightgray', alpha=0.75))
+        plt.legend(loc='upper right',fancybox=True, framealpha=0.5)
+        plt.tight_layout()
+    except Exception as e:
+        fig, ax = plt.subplots(figsize=(16, 10))
     canvas = FigureCanvas(fig)
     canvas.draw()
     plot = Image.frombytes('RGB', canvas.get_width_height(),canvas.tostring_rgb())
