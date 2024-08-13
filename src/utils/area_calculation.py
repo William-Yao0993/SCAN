@@ -84,10 +84,10 @@ def line_detect(img,sb_lenth,default_ratio):
 
           # cv2.line(img_roi,(x[0],x[1]),(x[2],x[3]),(0,0,255),3,0)
           # cv2.line(img_roi,(y[0],y[1]),(y[2],y[3]),(0,0,255),3,0)
-
+          
           ratio_to_unit = sb_lenth/max(x_candidate,y_candidate)
           # print(ratio_to_unit)
-          if np.abs(ratio_to_unit-default_ratio)>1E-3:
+          if np.abs(ratio_to_unit-default_ratio)>2E-5:
                warnings.warn(f'Detected Ratio is much different with default value, using default ratio: {default_ratio}')
                return default_ratio
      except Exception as e :
