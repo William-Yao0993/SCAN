@@ -50,7 +50,7 @@ class MainApp:
                         
                         run_pore,conf,sb_lenth, sb_unit,sb_pxl = navi.run_tb.execute()
                         self.sb_unit = sb_unit
-                        self.start_threading(predict_with_threads, self.data_path,run_pore,conf,sb_lenth, sb_unit,sb_pxl)
+                        self.start_threading(predict_with_threads, self.data_path,run_pore,conf,sb_lenth, self.sb_unit,sb_pxl)
                         self.future_callback(self.set_statistics)
                     except TypeError as te:
                         messagebox.showerror(title='Run Tab Error', message=te)
@@ -60,7 +60,7 @@ class MainApp:
                     if (self.statistics is None) and (len(self.statistics) !=0):
                         messagebox.showerror(title='Visualisation Failure',message='Fail to load the statistics, please rerun the model')
                     else:
-                        self.plots = draw_distribution_plots(self.statistics,FOLDER_ID,[STOMATA_DENSITY,STOMATA_SIZE+f'({self.sb_unit}²)',PORE_SIZE+f'({self.sb_unit}²)'],self.sb_unit)
+                        self.plots = draw_distribution_plots(self.statistics,FOLDER_ID,[STOMATA_DENSITY+f'({self.sb_unit}²)',STOMATA_SIZE+f'({self.sb_unit}²)',PORE_SIZE+f'({self.sb_unit}²)'],self.sb_unit)
                         temps = [subdir for subdir in os.listdir(TEMP_DIR) if os.path.isdir(os.path.join(TEMP_DIR,subdir))]
                         self.mainapp.naviBar.result_tb.set_dropdown(temps)
                         

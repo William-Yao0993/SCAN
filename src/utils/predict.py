@@ -134,8 +134,8 @@ def process_directory_data(data: list,sb_unit) -> dict:
         dir_name = df[FOLDER_ID].iloc[-1]
         summary = {
             FOLDER_ID: f'Folder Summary: {dir_name}',
-            STOMATA_DENSITY+'_Mean': df[STOMATA_DENSITY].mean(),
-            STOMATA_DENSITY+'_SE': df[STOMATA_DENSITY].sem(),
+            STOMATA_DENSITY+f'({sb_unit}²)'+'_Mean': df[STOMATA_DENSITY+f'({sb_unit}²)'].mean(),
+            STOMATA_DENSITY+f'({sb_unit}²)'+'_SE': df[STOMATA_DENSITY+f'({sb_unit}²)'].sem(),
             STOMATA_SIZE+f'({sb_unit}²)'+'_Mean': df[STOMATA_SIZE+f'({sb_unit}²)'].mean(),
             STOMATA_SIZE+f'({sb_unit}²)'+'_SE': df[STOMATA_SIZE+f'({sb_unit}²)'].sem(),
             PORE_SIZE+f'({sb_unit}²)'+'_Mean': df[PORE_SIZE+f'({sb_unit}²)'].mean(),
@@ -155,7 +155,7 @@ def process_image_data(data:list,sb_unit,area_in_mm2) -> dict:
         FOLDER_ID: dir_name,
         IMAGE_ID: f'Image Summary: {img_name}',
         STOMATA_COUNT: df[STOMATA_ID].count(),
-        STOMATA_DENSITY: df[STOMATA_ID].count() / area_in_mm2,
+        STOMATA_DENSITY+f'({sb_unit}²)': df[STOMATA_ID].count() / area_in_mm2,
         STOMATA_SIZE+f'({sb_unit}²)'+'_Mean': df[STOMATA_SIZE+f'({sb_unit}²)'].mean(),
         STOMATA_SIZE+f'({sb_unit}²)'+'_SE': df[STOMATA_SIZE+f'({sb_unit}²)'].sem(),
         PORE_SIZE+f'({sb_unit}²)'+'_Mean': df[PORE_SIZE+f'({sb_unit}²)'].mean(),
@@ -243,10 +243,10 @@ def draw_regression_plot(data: list| pd.DataFrame,sb_unit):
     def log_func(x, a, b):
         return a * np.log(x) + b
     try:
-        x = STOMATA_DENSITY
+        x = STOMATA_DENSITY+f'({sb_unit}²)'
         y = STOMATA_SIZE+f'({sb_unit}²)'+'_Mean'
         fig, ax = plt.subplots(figsize = (16,10))
-        df_cp = df.dropna(axis=0,subset=['Stomata Density'],inplace=False)
+        df_cp = df.dropna(axis=0,subset=[x],inplace=False)
         popt_inv, pcov_inv = curve_fit(inv_func, df_cp[x], df_cp[y])
         popt_log, pcov_log = curve_fit(log_func, df_cp[x], df_cp[y])
         slope, intercept = np.polyfit(df_cp[x], df_cp[y], 1)
