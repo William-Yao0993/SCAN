@@ -37,6 +37,7 @@ SMALL_FONT_SIZE = 10
 MEDIUM_FONT_SIZE = 12
 BIG_FONT_SIZE = 14
 # Stat constants 
+STOMATA_COUNT = 'Stomata Count'
 STOMATA_DENSITY= 'Stomata Density'
 STOMATA_SIZE = 'Stomata Size'
 PORE_SIZE ='Pore Size'
