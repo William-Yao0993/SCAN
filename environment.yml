@@ -10,7 +10,7 @@ dependencies:
   - pandas
   - Pillow
   - seaborn
-  - matplotlib
+  - matplotlib<3.10
   - numpy
   - pytorch 
   - torchvision
