@@ -48,14 +48,15 @@ class MainApp:
                         if not self.data_path:
                             messagebox.showerror(title='Run Section Error', message='Fail to Load Model and Data, Please Go Back Upload Section')
                         
-                        run_pore,conf,sb_lenth, sb_unit,sb_pxl = navi.run_tb.execute()
+                        run_pore,conf,sb_lenth, sb_unit,sb_pxl, threads = navi.run_tb.execute()
                         self.sb_unit = sb_unit
-                        self.start_threading(predict_with_threads, self.data_path,run_pore,conf,sb_lenth, self.sb_unit,sb_pxl)
+                        
+                        self.start_threading(predict_with_threads, self.data_path,run_pore,conf,sb_lenth, self.sb_unit,sb_pxl, threads)
                         self.future_callback(self.set_statistics)
                     except TypeError as te:
-                        messagebox.showerror(title='Run Tab Error', message=te)
+                        messagebox.showerror(title='Run Tab Error', message=str(te))
                     except Exception as e: 
-                        messagebox.showerror(title='Run Tab Error', message='Something unexpected happens, please report on github or author')
+                        messagebox.showerror(title='Run Tab Error', message=f'Something unexpected happens: {e}. Please report on GitHub or author')
                 case 2: # Result
                     if (self.statistics is None) and (len(self.statistics) !=0):
                         messagebox.showerror(title='Visualisation Failure',message='Fail to load the statistics, please rerun the model')
@@ -140,9 +141,9 @@ class MainApp:
             except TypeError as te:
                 content.stop_progress_bar()
                 messagebox.showerror(title='Input type error', message=str(te))
-            except Exception:
+            except Exception as e:
                 content.stop_progress_bar()
-                messagebox.showerror(title='Run Tab Error', message='Something unexpected happens, please report on GitHub or author')
+                messagebox.showerror(title='Run Tab Error', message=f'Something unexpected happens: {e}. Please report on GitHub or author')
             
         # # Callbacks to Present Storage from Threads 
         def set_statistics(self,statistics):

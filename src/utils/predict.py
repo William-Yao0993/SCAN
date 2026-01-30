@@ -16,14 +16,15 @@ import re
 # Analysis in each result immediately
 # Intergrate analyzed data in one frame
 #------------------------------------------------------------------------------------
-def predict_with_threads(dir_path,run_pore,conf,sb_lenth,sb_unit,sb_pxl):
+def predict_with_threads(dir_path,run_pore,conf,sb_lenth,sb_unit,sb_pxl, threads=None):
 
     '''
             Start Multiple Model Instances to Conduct Inference in Threads,
         Wait all Threads and Gather the Results 
 
         Determine Number of Threads:
-            Min (CPU Cores *4, Number of Sub-Folders)
+            If `threads` provided by user, use it (capped by MAX_THREADS and number of tasks),
+            otherwise use heuristic: Min(MAX_THREADS, os.cpu_count()*2, number of tasks).
         Return:
         Statistic results in all tasks(Threads) as Pandas.DataFrame 
 
@@ -34,7 +35,17 @@ def predict_with_threads(dir_path,run_pore,conf,sb_lenth,sb_unit,sb_pxl):
     total_imgs = sum(list(tasks_dict.values())) # For updating progress bar
     if total_imgs == 0:
         raise TypeError(f'There is no files found with following suffixes {IMG_SUFFIXS}')
-    threads_count = min(os.cpu_count()*4,len(tasks))
+    # Determine number of threads to use
+    try:
+        if threads is not None:
+            # Ensure integer and at least 1, and do not exceed available tasks or configured MAX_THREADS
+            threads_count = max(1, min(int(threads), MAX_THREADS, len(tasks)))
+        else:
+            threads_count = min(MAX_THREADS, min(os.cpu_count()*2, len(tasks)))
+    except Exception:
+        # Fallback to original heuristic on any conversion error
+        threads_count = min(MAX_THREADS, min(os.cpu_count()*2, len(tasks)))
+
     grouped_tasks= bin_split(tasks,threads_count)
     print (f'Run {threads_count} threads and for groups: {grouped_tasks}')
     with ThreadPoolExecutor(threads_count) as executor:

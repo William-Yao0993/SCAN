@@ -1,6 +1,6 @@
 from tkinter import ttk,filedialog,messagebox,END,BooleanVar,StringVar,IntVar,DoubleVar
 import os
-from src.config import SB_UNIT,SB_IN_PIXEL,SB_LENGTH
+from src.config import SB_UNIT,SB_IN_PIXEL,SB_LENGTH,MAX_THREADS
 
 class NaviBar:
     def __init__(self, parent):
@@ -83,17 +83,37 @@ class NaviBar:
             self.pxl_val = DoubleVar(value=SB_IN_PIXEL)
             self.pxl_et = ttk.Entry(self.run_fm, width=5, textvariable=self.pxl_val)
             self.pxl_et.grid(row=1,column=4,sticky='ew')
+
+            # Additional Double input
+            self.threads_lb = ttk.Label(self.run_fm, text='Threads: ')
+            self.threads_lb.grid(row=1,column=6, sticky='ew')
+            self.threads_val = IntVar(value=MAX_THREADS)
+            self.threads_et = ttk.Entry(self.run_fm, width=5, textvariable=self.threads_val)
+            self.threads_et.grid(row=1,column=7,sticky='ew')
+
+            
         def execute(self):
             '''
                 Check Confidence and Stream Mode Input back to Controller 
                 Return:
-                    (Stream, Confidence,Scale bar length,Scale bar unit,Scale bar length in pixel) 
+                    (Stream, Confidence, Scale bar length, Scale bar unit, Scale bar length in pixel, Threads) 
             '''
             conf = self.conf_val.get()
             if conf >= 1 or conf <=0.001:
                 messagebox.showerror(title='Run Section Error',message='Confidence Should in Range 0.001-1 Exclusively')
+                return None
 
-            return self.pore_val.get(), conf, self.sbl_val.get(),self.unit_val.get(),self.pxl_val.get()
+            # Validate threads input
+            try:
+                threads = int(self.threads_val.get())
+                if threads < 1:
+                    messagebox.showerror(title='Run Section Error', message='Threads must be >= 1')
+                    return None
+            except Exception:
+                messagebox.showerror(title='Run Section Error', message='Threads must be an integer')
+                return None
+
+            return self.pore_val.get(), conf, self.sbl_val.get(),self.unit_val.get(),self.pxl_val.get(), threads
 
     class ResultTab:
         def __init__(self,notebook):
