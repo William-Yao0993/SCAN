@@ -8,7 +8,6 @@ channels:
 dependencies:
   - python=3.11
   - pandas
-  - Pillow
   - seaborn
   - matplotlib<3.10
   - numpy
@@ -23,6 +22,7 @@ dependencies:
   - pip
   - tqdm
   - pip:
+    - Pillow
     - ttkthemes
     - opencv-contrib-python-headless
-    #- pyinstaller
+    
